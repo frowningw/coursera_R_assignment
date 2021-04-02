@@ -1,0 +1,50 @@
+---
+title: "Coursera stats inference"
+author: "Will S."
+date: "4/2/2021"
+output:
+  html_document: default
+  pdf_document: default
+  word_document: default
+---
+# Title: Coursera stats inference, by Will S. 
+ 
+## Overview 
+In part 1, I will demostrate 1,000 exponential distribution samples with n = 40 and lambda = 0.2 will converge asymptotically to a normal distribution, following the CLT. In part 2, I will construct a 95% confidence interval to show that the sources of vitamin C may be irrelevant to the growth of tooth, using the R toothgrowth dataset. 
+ 
+## PART1: Simulation. 
+Set the relevant properties of the exp distribution.
+```{r exp dist property}
+lambda = 0.2 #exp dist property
+En = c() #an empty vector to store means
+Vn = c() # an empty vector to store variances
+m = 1000 #simulation times
+op = par(mfrow=c(1,1)) #plot
+n = 40 #sample size
+```
+ 
+simulation: 
+ 
+```{r simulation}
+#simulation begins
+for (i in 1:m){
+  
+  #sample from exp
+  W = rexp(n, lambda)
+  
+  #standardize
+  En[i] = (mean(W) - 1/lambda)/((1/lambda)/sqrt(n))
+  Vn[i] = sd(W)^2
+}
+```
+ 
+plot: 
+ 
+```{r plot}
+#plot
+head(En) #dist mean = 1/lambda = 5
+head(Vn) #dist var = (1/lambda)^2 = 25
+hist(En, probability = TRUE, breaks = seq(-5,5,by=.5), main = "1,000 samples from means of rexp(40, .2)")
+curve(dnorm(x, mean = 0, sd = 1), add= TRUE, col = "red")
+```
+

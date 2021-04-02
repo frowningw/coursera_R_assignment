@@ -1,0 +1,72 @@
+---
+title: "toothgrowth"
+author: "Will S."
+date: "4/2/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## PART2: Confidence interval 
+
+Load the data: 
+
+```{r loading data}
+data <- ToothGrowth
+summary(data)
+head(data)
+str(data)
+library(dplyr)
+```
+
+Some exploratory analysis. Two boxplots will display to show the the length of tooth growth group_by-ed variable supp and variable dose. 
+
+```{r exp analysis plot}
+#exploratory plotting
+with(data, boxplot(len~supp))
+with(data, boxplot(len~dose))
+```
+
+datavc and dataoj are vectors storing growth values from respective supp. 
+ 
+```{r}
+datavc <- data[1:30,1]
+dataoj <- data[31:60,1]
+```
+
+Moments(Mean, sd, and variance) of length of tooth growth group_by-ed variable supp and variable dose. 
+
+```{r moments}
+#moments by supp
+datasupp <- data %>%
+  group_by(supp) %>%
+  summarize(len_mu = mean(len), len_sd = sd(len), len_var = var(len))
+datasupp
+
+#moments by dose
+datadose <- data %>%
+  group_by(dose) %>%
+  summarize(len_mu = mean(len), len_sd = sd(len), len_var = var(len))
+datadose
+```
+
+We construct a 95% conf interval. The results from directly calculation will be compared with that using t.test function$conf. Both show that the intercal contain 0, meaning we cannot eliminate the possibility of the fact that VC is not necessarily better than OJ in terms of providing vitaminC supplement.
+
+```{r conf interval}
+#by supp, can be treated as 2 independent samples, each 30
+#VC-OJ
+s <- sqrt((29*(as.numeric(datasupp[1,4]) + 
+                 as.numeric(datasupp[2,4])))/58)
+intvl <- as.numeric(datasupp[2,2] - datasupp[1,2]) + c(-1,1)*qt(0.975, 58)*s*sqrt(1/15)
+t_conf <- t.test(datavc, dataoj)$conf
+```
+
+```{r intvl}
+intvl
+```
+
+```{r t_conf}
+t_conf
+```
+
+
